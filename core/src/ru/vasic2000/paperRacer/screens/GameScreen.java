@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.vasic2000.paperRacer.RaceGame;
 import ru.vasic2000.paperRacer.sprites.Car;
+import ru.vasic2000.paperRacer.sprites.Competitor;
 import ru.vasic2000.paperRacer.states.GameStateManager;
 import ru.vasic2000.paperRacer.states.State;
 
@@ -15,6 +16,8 @@ class GameScreen extends State {
     private Texture track1, track2;
     private Vector2 trackPos1, trackPos2;
     private Car car;
+    private Competitor competitor1;
+    private Competitor competitor2;
 
     private float scaleX;
 
@@ -28,6 +31,8 @@ class GameScreen extends State {
         scaleX = (float) RaceGame.WIDTH / Gdx.graphics.getWidth();
 
         car = new Car();
+        competitor1 = new Competitor("williams.png", 100, 400);
+        competitor2 = new Competitor("benetton.png", 375, 300);
 
         track1 = new Texture("track.jpg");
         track2 = new Texture("track.jpg");
@@ -56,6 +61,8 @@ class GameScreen extends State {
         handleInput();
         moveTrack();
         car.update(dt);
+        competitor1.update(dt);
+        competitor2.update(dt);
         camera.position.y += car.getSpeed() * dt;
         camera.update();
     }
@@ -63,11 +70,18 @@ class GameScreen extends State {
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
+
         sb.begin();
         sb.draw(track1, trackPos1.x, trackPos1.y, track1.getWidth(), track1.getHeight());
         sb.draw(track2, trackPos2.x, trackPos2.y, track2.getWidth(), track2.getHeight());
+
         sb.draw(car.getCar(), car.getPosition().x, car.getPosition().y,
                 car.getCar().getWidth(), car.getCar().getHeight());
+        sb.draw(competitor1.getCar(), competitor1.getPosition().x, competitor1.getPosition().y,
+                competitor1.getCar().getWidth(), competitor1.getCar().getHeight());
+        sb.draw(competitor2.getCar(), competitor2.getPosition().x, competitor2.getPosition().y,
+                competitor2.getCar().getWidth(), competitor2.getCar().getHeight());
+
         sb.end();
     }
 
@@ -83,6 +97,9 @@ class GameScreen extends State {
     public void dispose() {
         track1.dispose();
         track2.dispose();
+        car.dispose();
+        competitor1.dispose();
+        competitor2.dispose();
     }
 
 }
