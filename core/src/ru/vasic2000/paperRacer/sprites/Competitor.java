@@ -9,11 +9,11 @@ public class Competitor {
     private Vector2 carPosition;
     private Rectangle carBounds;
 
-    int speed, speedH;
+    float speed, speedH;
 
     public Competitor(String picture, int x, int y) {
         car = new Texture(picture);
-        speed = 250;
+        speed = 0;
         speedH = 0;
 
         carPosition = new Vector2(x - car.getWidth() /  2,
@@ -31,6 +31,8 @@ public class Competitor {
     }
 
     public void update(float dt) {
+        speed = changeSpeed(speed, dt);
+
         carPosition.add(speedH * dt, speed * dt);
 
         if(carPosition.x < 0) carPosition.x = 0;
@@ -53,5 +55,23 @@ public class Competitor {
 
     public void goStraight() {
         speedH = 0;
+    }
+
+    private float changeSpeed(float speed, float dt) {
+        if(speed < 250) {
+            if ((speed + 35 * dt) < 250)
+                speed += 35 * dt;
+            else
+                speed = 250;
+        }
+
+        if(speed > 250) {
+            if ((speed - 35 * dt) > 250)
+                speed -= 35 * dt;
+            else
+                speed = 250;
+        }
+
+        return speed;
     }
 }

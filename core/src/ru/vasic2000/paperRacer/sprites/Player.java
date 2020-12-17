@@ -4,24 +4,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Car {
+public class Player {
     private Texture car;
     private Vector2 carPosition;
     private Rectangle carBounds;
 
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    int speed, speedH;
+    float speed, speedH;
+    private int acceleration;
 
-    public Car() {
-        car = new Texture("mclaren.png");
-        speed = 250;
+    public Player(String picture, int x, int y) {
+        car = new Texture(picture);
+        speed = 0;
         speedH = 0;
+        acceleration = 0;
 
-        carPosition = new Vector2(240 - car.getWidth() /  2,
-                150 - car.getHeight() / 2);
+        carPosition = new Vector2(x - car.getWidth() /  2,
+                y - car.getHeight() / 2);
 
         carBounds = new Rectangle(carPosition.x, carPosition.y, car.getWidth(), car.getHeight());
     }
@@ -35,12 +37,37 @@ public class Car {
     }
 
     public void update(float dt) {
+        speed = changeSpeed(speed, dt);
+
         carPosition.add(speedH * dt, speed * dt);
 
         if(carPosition.x < 0) carPosition.x = 0;
         if(carPosition.x > (480 - car.getWidth())) carPosition.x = 480 - car.getWidth();
 
         carBounds.setPosition(carPosition.x, carPosition.y);
+    }
+
+    private float changeSpeed(float speed, float dt) {
+        if((acceleration == 1) && speed < 350) {
+            speed = speed + 25 * dt;
+            return speed;
+        }
+
+        if(speed < 250) {
+            if ((speed + 25 * dt) < 250)
+                speed += 25 * dt;
+            else
+                speed = 250;
+        }
+
+        if(speed > 250) {
+            if ((speed - 25 * dt) > 250)
+                speed -= 25 * dt;
+            else
+                speed = 250;
+        }
+
+        return speed;
     }
 
     public Texture getCar() {
@@ -57,5 +84,13 @@ public class Car {
 
     public void goStraight() {
         speedH = 0;
+    }
+
+    public void increaseSpeed() {
+        acceleration = 1;
+    }
+
+    public void disposeSpeed() {
+        acceleration = 0;
     }
 }
