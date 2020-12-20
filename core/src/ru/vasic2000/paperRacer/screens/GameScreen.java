@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.vasic2000.paperRacer.RaceGame;
+import ru.vasic2000.paperRacer.sprites.Obstacle;
 import ru.vasic2000.paperRacer.sprites.Competitor;
 
 import ru.vasic2000.paperRacer.sprites.Player;
@@ -21,7 +22,12 @@ class GameScreen extends State {
     private Competitor competitor1;
     private Competitor competitor2;
 
+    private Obstacle small_repair;
+    private Obstacle big_repair;
+
     private float scaleX, scaleY;
+
+//    private float averageSpeed;
 
     public GameScreen(GameStateManager gsm) {
         super(gsm);
@@ -36,6 +42,9 @@ class GameScreen extends State {
         player = new Player("mclaren.png", 240, 130);
         competitor1 = new Competitor("williams.png", 100, 400);
         competitor2 = new Competitor("benetton.png", 375, 300);
+        big_repair = new Obstacle("building_yard.png", 240, 4500);
+        small_repair = new Obstacle("small_repair.png", 100, 7000);
+
 
         track1 = new Texture("track.jpg");
         track2 = new Texture("track.jpg");
@@ -43,6 +52,7 @@ class GameScreen extends State {
 
         trackPos1 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2);
         trackPos2 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2 + track1.getHeight());
+
     }
 
     @Override
@@ -58,12 +68,13 @@ class GameScreen extends State {
                     (Gdx.input.getY() * scaleY > 0) && (Gdx.input.getY() * scaleY < 300))
                 player.increaseSpeed();
 
-            else player.disposeSpeed();
-
-            if (Gdx.input.getX() * scaleX < player.getPosition().x + player.getCar().getWidth() / 2)
-                player.goLeft();
-            if (Gdx.input.getX() * scaleX > player.getPosition().x + player.getCar().getWidth() / 2)
-                player.goRight();
+            else {
+                player.disposeSpeed();
+                if (Gdx.input.getX() * scaleX < player.getPosition().x + player.getCar().getWidth() / 2)
+                    player.goLeft();
+                if (Gdx.input.getX() * scaleX > player.getPosition().x + player.getCar().getWidth() / 2)
+                    player.goRight();
+            }
         }
 
         if (!Gdx.input.isTouched()) {
@@ -75,11 +86,56 @@ class GameScreen extends State {
     @Override
     public void update(float dt) {
         handleInput();
-        moveTrack();
+
+        if(player.getCarBounds().overlaps(big_repair.getBYBounds())) {
+            player.setSpeed(0);
+        }
+
+        if(player.getCarBounds().overlaps(small_repair.getBYBounds())) {
+            player.setSpeed(0);
+        }
+
+//        if (player.getCarBounds().overlaps(competitor1.getCarBounds())) {
+////        Столкновение боком
+//            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) <
+//                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
+//                averageSpeed = (player.getSpeedH() + competitor1.getSpeedH());
+//                competitor1.setSpeedH(averageSpeed);
+//                player.setSpeedH(averageSpeed);
+//            }
+//
+////        Столкновение сзади
+//            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) >
+//                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
+//                averageSpeed = (player.getSpeed() + competitor1.getSpeed());
+//                player.setSpeed(averageSpeed);
+//                competitor1.setSpeed(averageSpeed);
+//            }
+//        }
+//
+//        if (player.getCarBounds().overlaps(competitor2.getCarBounds())) {
+////        Столкновение боком
+//            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
+//                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
+//                averageSpeed = (player.getSpeedH() + competitor2.getSpeedH())/2;
+//                player.setSpeedH(averageSpeed);
+//                competitor2.setSpeedH(averageSpeed);
+//            }
+//
+////        Столкновение сзади
+//            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) >
+//                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
+//                averageSpeed = (player.getSpeed() + competitor2.getSpeed())/2;
+//                player.setSpeed(averageSpeed);
+//                competitor2.setSpeed(averageSpeed);
+//            }
+//        }
 
         player.update(dt);
         competitor1.update(dt);
         competitor2.update(dt);
+
+        moveTrack();
 
         camera.position.y += player.getSpeed() * dt;
         camera.update();
@@ -100,17 +156,22 @@ class GameScreen extends State {
         sb.draw(competitor2.getCar(), competitor2.getPosition().x, competitor2.getPosition().y,
                 competitor2.getCar().getWidth(), competitor2.getCar().getHeight());
 
+        sb.draw(big_repair.getBY(), big_repair.getPosition().x, big_repair.getPosition().y,
+                big_repair.getBY().getWidth(), big_repair.getBY().getHeight());
+        sb.draw(small_repair.getBY(), small_repair.getPosition().x, small_repair.getPosition().y,
+                small_repair.getBY().getWidth(), small_repair.getBY().getHeight());
+
         sb.draw(accelerator, 180, player.getPosition().y + 600, 85, 140);
 
         sb.end();
     }
 
     private void moveTrack() {
-
         if(camera.position.y - (camera.viewportHeight) / 2 > trackPos1.y + track1.getHeight())
             trackPos1.add(0, track1.getHeight() * 2);
         if(camera.position.y - (camera.viewportHeight) / 2 > trackPos2.y + track2.getHeight())
             trackPos2.add(0, track2.getHeight() * 2);
+
     }
 
     @Override
@@ -120,6 +181,8 @@ class GameScreen extends State {
         player.dispose();
         competitor1.dispose();
         competitor2.dispose();
+        small_repair.dispose();
+        big_repair.dispose();
     }
 
 }

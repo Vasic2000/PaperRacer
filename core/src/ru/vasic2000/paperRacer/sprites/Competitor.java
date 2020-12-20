@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Competitor {
     private Texture car;
     private Vector2 carPosition;
+
     private Rectangle carBounds;
 
     float speed, speedH;
@@ -73,5 +74,25 @@ public class Competitor {
         }
 
         return speed;
+    }
+
+    public Rectangle getCarBounds() {
+        return carBounds;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getSpeedH() {
+        return speed;
+    }
+
+    public void setSpeedH(float speed) {
+        this.speed = speed;
     }
 }

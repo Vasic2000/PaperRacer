@@ -9,11 +9,9 @@ public class Player {
     private Vector2 carPosition;
     private Rectangle carBounds;
 
-    public float getSpeed() {
-        return speed;
-    }
+    float speed;
+    float speedH;
 
-    float speed, speedH;
     private int acceleration;
 
     public Player(String picture, int x, int y) {
@@ -41,8 +39,15 @@ public class Player {
 
         carPosition.add(speedH * dt, speed * dt);
 
-        if(carPosition.x < 0) carPosition.x = 0;
-        if(carPosition.x > (480 - car.getWidth())) carPosition.x = 480 - car.getWidth();
+        if(carPosition.x < 0) {
+            carPosition.x = 0;
+            speedH = 0;
+        }
+
+        if(carPosition.x > (480 - car.getWidth())) {
+            carPosition.x = 480 - car.getWidth();
+            speedH = 0;
+        }
 
         carBounds.setPosition(carPosition.x, carPosition.y);
     }
@@ -93,4 +98,26 @@ public class Player {
     public void disposeSpeed() {
         acceleration = 0;
     }
+
+    public Rectangle getCarBounds() {
+        return carBounds;
+    }
+
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getSpeedH() {
+        return speed;
+    }
+
+    public void setSpeedH(float speed) {
+        this.speed = speed;
+    }
+
 }
