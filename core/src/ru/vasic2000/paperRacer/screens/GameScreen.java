@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Random;
+
 import ru.vasic2000.paperRacer.RaceGame;
 import ru.vasic2000.paperRacer.sprites.Obstacle;
 import ru.vasic2000.paperRacer.sprites.Competitor;
@@ -25,6 +27,8 @@ class GameScreen extends State {
     private Obstacle small_repair;
     private Obstacle big_repair;
 
+    private Random rnd;
+
     private float scaleX, scaleY;
 
 //    private float averageSpeed;
@@ -32,6 +36,7 @@ class GameScreen extends State {
     public GameScreen(GameStateManager gsm) {
         super(gsm);
         camera.setToOrtho(false, RaceGame.WIDTH, RaceGame.HEIGHT);
+        rnd = new Random();
 
         int x = RaceGame.WIDTH;
         int y = Gdx.graphics.getWidth();
@@ -42,8 +47,8 @@ class GameScreen extends State {
         player = new Player("mclaren.png", 240, 130);
         competitor1 = new Competitor("williams.png", 100, 400);
         competitor2 = new Competitor("benetton.png", 375, 300);
-        big_repair = new Obstacle("building_yard.png", 240, 4500);
-        small_repair = new Obstacle("small_repair.png", 100, 7000);
+        big_repair = new Obstacle("building_yard.png", rnd.nextInt(480), 3000 + rnd.nextInt(1000));
+        small_repair = new Obstacle("small_repair.png", rnd.nextInt(480), 1000 + rnd.nextInt(1000));
 
 
         track1 = new Texture("track.jpg");
@@ -58,11 +63,6 @@ class GameScreen extends State {
     @Override
     protected void handleInput() {
         if (Gdx.input.isTouched()) {
-
-            float x, y;
-
-            x = Gdx.input.getX() * scaleX;
-            y = Gdx.input.getY() * scaleY;
 
             if((Gdx.input.getX() * scaleX > 180) && (Gdx.input.getX() * scaleX < 300) &&
                     (Gdx.input.getY() * scaleY > 0) && (Gdx.input.getY() * scaleY < 300))
@@ -139,6 +139,26 @@ class GameScreen extends State {
 
         camera.position.y += player.getSpeed() * dt;
         camera.update();
+
+        if(big_repair.getPosition().y < camera.position.y - 400 - big_repair.getBY().getHeight()) {
+            int x = rnd.nextInt(300);
+            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+
+            while(Math.abs(y - small_repair.getPosition().y) < big_repair.getBY().getHeight() + 500)
+                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+            big_repair.setObstacle_Position(x, y);
+            big_repair.setObstacle_Bounds(x, y);
+        }
+
+        if(small_repair.getPosition().y < camera.position.y - 400 - small_repair.getBY().getHeight()) {
+            int x = rnd.nextInt(380);
+            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+
+            while(Math.abs(y - big_repair.getPosition().y) < small_repair.getBY().getHeight() + 500)
+                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+            small_repair.setObstacle_Position(x, y);
+            small_repair.setObstacle_Bounds(x, y);
+        }
     }
 
     @Override
