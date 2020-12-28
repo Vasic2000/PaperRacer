@@ -62,24 +62,48 @@ class GameScreen extends State {
 
     @Override
     protected void handleInput() {
-        if (Gdx.input.isTouched()) {
+        boolean firstFingerTouching = Gdx.input.isTouched(0);
+        boolean secondFingerTouching = Gdx.input.isTouched(1);
+        boolean speedUp1;
+        boolean speedUp2;
 
-            if((Gdx.input.getX() * scaleX > 180) && (Gdx.input.getX() * scaleX < 300) &&
-                    (Gdx.input.getY() * scaleY > 0) && (Gdx.input.getY() * scaleY < 300))
-                player.increaseSpeed();
+        if ((Gdx.input.getX(0) * scaleX > 180) && (Gdx.input.getX(0) * scaleX < 300) &&
+                (Gdx.input.getY(0) * scaleY > 0) && (Gdx.input.getY(0) * scaleY < 200)) {
+            player.increaseSpeed();
+            speedUp1 = true;
+        } else speedUp1 = false;
 
-            else {
-                player.disposeSpeed();
-                if (Gdx.input.getX() * scaleX < player.getPosition().x + player.getCar().getWidth() / 2)
-                    player.goLeft();
-                if (Gdx.input.getX() * scaleX > player.getPosition().x + player.getCar().getWidth() / 2)
-                    player.goRight();
-            }
+        if ((Gdx.input.getX(1) * scaleX > 180) && (Gdx.input.getX(1) * scaleX < 300) &&
+                (Gdx.input.getY(1) * scaleY > 0) && (Gdx.input.getY(1) * scaleY < 200)) {
+            player.increaseSpeed();
+            speedUp2 = true;
+        } else speedUp2 = false;
+
+        if(!speedUp1 && !speedUp2) {
+            player.disposeSpeed();
         }
 
-        if (!Gdx.input.isTouched()) {
+        if (firstFingerTouching && !speedUp1) {
+            if (Gdx.input.getX(0) * scaleX < player.getPosition().x + player.getCar().getWidth() / 2)
+                player.goLeft();
+            if (Gdx.input.getX(0) * scaleX > player.getPosition().x + player.getCar().getWidth() / 2)
+                player.goRight();
+        }
+
+        if (secondFingerTouching && !speedUp2) {
+            if (Gdx.input.getX(1) * scaleX < player.getPosition().x + player.getCar().getWidth() / 2)
+                player.goLeft();
+            if (Gdx.input.getX(1) * scaleX > player.getPosition().x + player.getCar().getWidth() / 2)
+                player.goRight();
+        }
+
+        if (!firstFingerTouching && !secondFingerTouching) {
             player.goStraight();
             player.disposeSpeed();
+        }
+
+        if((!firstFingerTouching && speedUp2) || (!secondFingerTouching && speedUp1)) {
+            player.goStraight();
         }
     }
 
