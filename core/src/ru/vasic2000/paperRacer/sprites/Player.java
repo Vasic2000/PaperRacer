@@ -113,11 +113,11 @@ public class Player {
     }
 
     public float getSpeedH() {
-        return speed;
+        return speedH;
     }
 
     public void setSpeedH(float speed) {
-        this.speed = speed;
+        this.speedH = speed;
     }
 
 }

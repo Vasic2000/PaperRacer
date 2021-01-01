@@ -60,10 +60,10 @@ public class Competitor {
 
     private float changeSpeed(float speed, float dt) {
         if(speed < 250) {
-            if ((speed + 35 * dt) < 250)
+            if ((speed + 35 * dt) < 175)
                 speed += 35 * dt;
             else
-                speed = 250;
+                speed = 175;
         }
 
         if(speed > 250) {
@@ -89,10 +89,10 @@ public class Competitor {
     }
 
     public float getSpeedH() {
-        return speed;
+        return speedH;
     }
 
     public void setSpeedH(float speed) {
-        this.speed = speed;
+        this.speedH = speed;
     }
 }
