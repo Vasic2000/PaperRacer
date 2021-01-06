@@ -17,9 +17,9 @@ import ru.vasic2000.paperRacer.states.State;
 
 class GameScreen extends State {
 
-    private Texture track1, track2;
+    private Texture track1, track2, track3, track4;
     private Texture accelerator;
-    private Vector2 trackPos1, trackPos2;
+    private Vector2 trackPos1, trackPos2, trackPos3, trackPos4;
     private Player player;
     private Competitor competitor1;
     private Competitor competitor2;
@@ -48,13 +48,19 @@ class GameScreen extends State {
         small_repair = new Obstacle("small_repair.png", rnd.nextInt(480), 1000 + rnd.nextInt(1000));
 
 
-        track1 = new Texture("track.jpg");
-        track2 = new Texture("track.jpg");
+        track1 = new Texture("track01.jpg");
+        track2 = new Texture("track02.jpg");
+        track3 = new Texture("track03.jpg");
+        track4 = new Texture("track04.jpg");
         accelerator = new Texture("accelerator.png");
 
         trackPos1 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2);
-        trackPos2 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2 + track1.getHeight());
-
+        trackPos2 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+                + track1.getHeight());
+        trackPos3 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+                + track1.getHeight() + track2.getHeight());
+        trackPos4 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+                + track1.getHeight() + track2.getHeight() + track3.getHeight());
     }
 
     @Override
@@ -120,8 +126,6 @@ class GameScreen extends State {
 //        Столкновение боком
             if (Math.abs(player.getPosition().x - competitor1.getPosition().x) >
                     Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
-                float spedHP = player.getSpeedH();
-                float spedH1 = competitor1.getSpeedH();
                 averageSpeed = (player.getSpeedH() + competitor1.getSpeedH()) / 2;
                 player.setSpeedH(averageSpeed);
                 competitor1.setSpeedH(averageSpeed);
@@ -142,8 +146,6 @@ class GameScreen extends State {
 //        Столкновение боком
             if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
                     Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
-                spedHP = player.getSpeedH();
-                spedH1 = competitor2.getSpeedH();
                 averageSpeed = (player.getSpeedH() + competitor2.getSpeedH()) / 2;
                 player.setSpeedH(averageSpeed);
                 competitor2.setSpeedH(averageSpeed);
@@ -195,6 +197,8 @@ class GameScreen extends State {
         sb.begin();
         sb.draw(track1, trackPos1.x, trackPos1.y, track1.getWidth(), track1.getHeight());
         sb.draw(track2, trackPos2.x, trackPos2.y, track2.getWidth(), track2.getHeight());
+        sb.draw(track3, trackPos3.x, trackPos3.y, track3.getWidth(), track3.getHeight());
+        sb.draw(track4, trackPos4.x, trackPos4.y, track4.getWidth(), track4.getHeight());
 
         sb.draw(player.getCar(), player.getPosition().x, player.getPosition().y,
                 player.getCar().getWidth(), player.getCar().getHeight());
@@ -215,16 +219,21 @@ class GameScreen extends State {
 
     private void moveTrack() {
         if(camera.position.y - (camera.viewportHeight) / 2 > trackPos1.y + track1.getHeight())
-            trackPos1.add(0, track1.getHeight() * 2);
+            trackPos1.add(0, track1.getHeight() * 4);
         if(camera.position.y - (camera.viewportHeight) / 2 > trackPos2.y + track2.getHeight())
-            trackPos2.add(0, track2.getHeight() * 2);
-
+            trackPos2.add(0, track2.getHeight() * 4);
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos3.y + track3.getHeight())
+            trackPos3.add(0, track3.getHeight() * 4);
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos4.y + track4.getHeight())
+            trackPos4.add(0, track4.getHeight() * 4);
     }
 
     @Override
     public void dispose() {
         track1.dispose();
         track2.dispose();
+        track3.dispose();
+        track4.dispose();
         player.dispose();
         competitor1.dispose();
         competitor2.dispose();
