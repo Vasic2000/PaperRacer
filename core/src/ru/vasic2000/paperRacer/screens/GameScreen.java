@@ -130,35 +130,32 @@ class GameScreen extends State {
                 player.setSpeedH(averageSpeed);
                 competitor1.setSpeedH(averageSpeed);
             }
+//        Столкновение сзади
+            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) <
+                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
+                averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
+                player.setSpeed(averageSpeed);
+                competitor1.setSpeed(averageSpeed);
+            }
         }
-////        Столкновение сзади
-//            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) >
-//                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
-                float spedHP = player.getSpeedH();
-                float spedH1 = competitor1.getSpeedH();
-//                averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
-//                player.setSpeed(averageSpeed);
-//                competitor1.setSpeed(averageSpeed);
-//            }
-//        }
 
         if (player.getCarBounds().overlaps(competitor2.getCarBounds())) {
 //        Столкновение боком
-            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
+            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) >
                     Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
                 averageSpeed = (player.getSpeedH() + competitor2.getSpeedH()) / 2;
                 player.setSpeedH(averageSpeed);
                 competitor2.setSpeedH(averageSpeed);
             }
+
+//        Столкновение сзади
+            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
+                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
+                averageSpeed = (player.getSpeed() + competitor2.getSpeed()) / 2;
+                player.setSpeed(averageSpeed);
+                competitor2.setSpeed(averageSpeed);
+            }
         }
-////        Столкновение сзади
-//            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) >
-//                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
-//                averageSpeed = (player.getSpeed() + competitor2.getSpeed())/2;
-//                player.setSpeed(averageSpeed);
-//                competitor2.setSpeed(averageSpeed);
-//            }
-//        }
 
         player.update(dt);
         competitor1.update(dt);
