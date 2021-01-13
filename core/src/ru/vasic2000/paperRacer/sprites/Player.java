@@ -35,8 +35,6 @@ public class Player {
     }
 
     public void update(float dt) {
-        speed = changeSpeed(speed, dt);
-
         carPosition.add(speedH * dt, speed * dt);
 
         if(carPosition.x < 0) {
@@ -52,7 +50,7 @@ public class Player {
         carBounds.setPosition(carPosition.x, carPosition.y);
     }
 
-    private float changeSpeed(float speed, float dt) {
+    public float changeSpeed(float dt) {
         if((acceleration == 1) && speed < 350) {
             speed = speed + 25 * dt;
             return speed;
@@ -119,5 +117,4 @@ public class Player {
     public void setSpeedH(float speed) {
         this.speedH = speed;
     }
-
 }

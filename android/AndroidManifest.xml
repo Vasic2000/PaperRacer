@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.vasic2000.racer_8bit" >
+    package="ru.vasic2000.paperRacer" >
 
     <application
         android:allowBackup="true"

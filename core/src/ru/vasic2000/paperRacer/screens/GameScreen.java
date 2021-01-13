@@ -41,12 +41,15 @@ class GameScreen extends State {
         scaleX = (float) RaceGame.WIDTH / Gdx.graphics.getWidth();
         scaleY = (float) RaceGame.HEIGHT / Gdx.graphics.getHeight();
 
+        initGameObjects();
+    }
+
+    private void initGameObjects() {
         player = new Player("mclaren.png", 240, 130);
         competitor1 = new Competitor("williams.png", 100, 400);
         competitor2 = new Competitor("benetton.png", 375, 300);
         big_repair = new Obstacle("building_yard.png", rnd.nextInt(480), 3000 + rnd.nextInt(1000));
         small_repair = new Obstacle("small_repair.png", rnd.nextInt(480), 1000 + rnd.nextInt(1000));
-
 
         track1 = new Texture("track01.jpg");
         track2 = new Texture("track02.jpg");
@@ -114,77 +117,23 @@ class GameScreen extends State {
     public void update(float dt) {
         handleInput();
 
-        if(player.getCarBounds().overlaps(big_repair.getBYBounds())) {
-            player.setSpeed(0);
-        }
+        checkCollisions(dt);
 
-        if(player.getCarBounds().overlaps(small_repair.getBYBounds())) {
-            player.setSpeed(0);
-        }
-
-        if (player.getCarBounds().overlaps(competitor1.getCarBounds())) {
-//        Столкновение боком
-            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) >
-                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
-                averageSpeed = (player.getSpeedH() + competitor1.getSpeedH()) / 2;
-                player.setSpeedH(averageSpeed);
-                competitor1.setSpeedH(averageSpeed);
-            }
-//        Столкновение сзади
-            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) <
-                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
-                averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
-                player.setSpeed(averageSpeed);
-                competitor1.setSpeed(averageSpeed);
-            }
-        }
-
-        if (player.getCarBounds().overlaps(competitor2.getCarBounds())) {
-//        Столкновение боком
-            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) >
-                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
-                averageSpeed = (player.getSpeedH() + competitor2.getSpeedH()) / 2;
-                player.setSpeedH(averageSpeed);
-                competitor2.setSpeedH(averageSpeed);
-            }
-
-//        Столкновение сзади
-            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
-                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
-                averageSpeed = (player.getSpeed() + competitor2.getSpeed()) / 2;
-                player.setSpeed(averageSpeed);
-                competitor2.setSpeed(averageSpeed);
-            }
-        }
-
+        player.changeSpeed(dt);
         player.update(dt);
+
+        competitor1.changeSpeed(dt);
         competitor1.update(dt);
+
+        competitor2.changeSpeed(dt);
         competitor2.update(dt);
 
-        moveTrack();
+        infinityTrack();
 
-        camera.position.y += player.getSpeed() * dt;
+        camera.position.y = player.getPosition().y + 340;
         camera.update();
 
-        if(big_repair.getPosition().y < camera.position.y - 400 - big_repair.getBY().getHeight()) {
-            int x = rnd.nextInt(300);
-            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
-
-            while(Math.abs(y - small_repair.getPosition().y) < big_repair.getBY().getHeight() + 500)
-                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
-            big_repair.setObstacle_Position(x, y);
-            big_repair.setObstacle_Bounds(x, y);
-        }
-
-        if(small_repair.getPosition().y < camera.position.y - 400 - small_repair.getBY().getHeight()) {
-            int x = rnd.nextInt(380);
-            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
-
-            while(Math.abs(y - big_repair.getPosition().y) < small_repair.getBY().getHeight() + 500)
-                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
-            small_repair.setObstacle_Position(x, y);
-            small_repair.setObstacle_Bounds(x, y);
-        }
+        infinityObstacle();
     }
 
     @Override
@@ -214,17 +163,6 @@ class GameScreen extends State {
         sb.end();
     }
 
-    private void moveTrack() {
-        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos1.y + track1.getHeight())
-            trackPos1.add(0, track1.getHeight() * 4);
-        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos2.y + track2.getHeight())
-            trackPos2.add(0, track2.getHeight() * 4);
-        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos3.y + track3.getHeight())
-            trackPos3.add(0, track3.getHeight() * 4);
-        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos4.y + track4.getHeight())
-            trackPos4.add(0, track4.getHeight() * 4);
-    }
-
     @Override
     public void dispose() {
         track1.dispose();
@@ -236,6 +174,125 @@ class GameScreen extends State {
         competitor2.dispose();
         small_repair.dispose();
         big_repair.dispose();
+    }
+
+    private void infinityTrack() {
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos1.y + track1.getHeight())
+            trackPos1.add(0, track1.getHeight() * 4);
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos2.y + track2.getHeight())
+            trackPos2.add(0, track2.getHeight() * 4);
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos3.y + track3.getHeight())
+            trackPos3.add(0, track3.getHeight() * 4);
+        if(camera.position.y - (camera.viewportHeight) / 2 > trackPos4.y + track4.getHeight())
+            trackPos4.add(0, track4.getHeight() * 4);
+    }
+
+    private void infinityObstacle() {
+        if(big_repair.getPosition().y < camera.position.y - 400 - big_repair.getBY().getHeight()) {
+            int x = rnd.nextInt(300);
+            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+
+            while(Math.abs(y - small_repair.getPosition().y) < big_repair.getBY().getHeight() + 500)
+                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+            big_repair.setObstacle_Position(x, y);
+            big_repair.setObstacle_Bounds(x, y);
+        }
+
+        if(small_repair.getPosition().y < camera.position.y - 400 - small_repair.getBY().getHeight()) {
+            int x = rnd.nextInt(380);
+            int y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+
+            while(Math.abs(y - big_repair.getPosition().y) < small_repair.getBY().getHeight() + 500)
+                y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
+            small_repair.setObstacle_Position(x, y);
+            small_repair.setObstacle_Bounds(x, y);
+        }
+    }
+
+    private void checkCollisions(float dt) {
+        if(player.getCarBounds().overlaps(big_repair.getBYBounds())) {
+            player.setSpeed(0);
+        }
+
+        if(player.getCarBounds().overlaps(small_repair.getBYBounds())) {
+            player.setSpeed(0);
+        }
+
+        if (player.getCarBounds().overlaps(competitor1.getCarBounds())) {
+//        Столкновение боком
+            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) >
+                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
+                if(!competitor1.leftBounds() && !competitor1.rightBounds()) {
+                    averageSpeed = (player.getSpeedH() + competitor1.getSpeedH()) / 2;
+                    player.setSpeedH(averageSpeed);
+                    competitor1.setSpeedH(averageSpeed);
+                } else {
+                    if(competitor1.leftBounds()) {
+                        player.setSpeedH(155);
+                        competitor1.setSpeedH(0);
+
+                        averageSpeed = player.getSpeed();
+                        player.setSpeed(0);
+                        player.update(dt);
+                        player.setSpeed(averageSpeed);
+                    }
+                    if(competitor1.rightBounds()) {
+                        player.setSpeedH(-155);
+                        competitor1.setSpeedH(0);
+
+                        averageSpeed = player.getSpeed();
+                        player.setSpeed(0);
+                        player.update(dt);
+                        player.setSpeed(averageSpeed);
+                    }
+                }
+            }
+//        Столкновение сзади
+            if (Math.abs(player.getPosition().x - competitor1.getPosition().x) <
+                    Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
+                averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
+                player.setSpeed(averageSpeed);
+                competitor1.setSpeed(averageSpeed);
+            }
+        }
+
+        if (player.getCarBounds().overlaps(competitor2.getCarBounds())) {
+//        Столкновение боком
+            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) >
+                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
+                if(!competitor2.leftBounds() && !competitor2.rightBounds()) {
+                    averageSpeed = (player.getSpeedH() + competitor2.getSpeedH()) / 2;
+                    player.setSpeedH(averageSpeed);
+                    competitor2.setSpeedH(averageSpeed);
+                } else {
+                    if(competitor2.leftBounds()) {
+                        player.setSpeedH(155);
+                        competitor2.setSpeedH(0);
+
+                        averageSpeed = player.getSpeed();
+                        player.setSpeed(0);
+                        player.update(dt);
+                        player.setSpeed(averageSpeed);
+                    }
+                    if(competitor2.rightBounds()) {
+                        player.setSpeedH(-155);
+                        competitor2.setSpeedH(0);
+
+                        averageSpeed = player.getSpeed();
+                        player.setSpeed(0);
+                        player.update(dt);
+                        player.setSpeed(averageSpeed);
+                    }
+                }
+            }
+//        Столкновение сзади
+            if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
+                    Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
+                averageSpeed = (player.getSpeed() + competitor2.getSpeed()) / 2;
+                player.setSpeed(averageSpeed);
+                competitor2.setSpeed(averageSpeed);
+            }
+        }
     }
 
 }

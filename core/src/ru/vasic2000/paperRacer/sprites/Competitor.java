@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Competitor {
     private Texture car;
+
     private Vector2 carPosition;
 
     private Rectangle carBounds;
@@ -32,33 +33,34 @@ public class Competitor {
     }
 
     public void update(float dt) {
-        speed = changeSpeed(speed, dt);
 
         carPosition.add(speedH * dt, speed * dt);
 
-        if(carPosition.x < 0) carPosition.x = 0;
-        if(carPosition.x > (480 - car.getWidth())) carPosition.x = 480 - car.getWidth();
+        if(leftBounds()) {
+            carPosition.x = 0;
+            speedH = 0;
+        }
+        if(rightBounds()) {
+            carPosition.x = 480 - car.getWidth();
+            speedH = 0;
+        }
 
         carBounds.setPosition(carPosition.x, carPosition.y);
+    }
+
+    public boolean rightBounds() {
+        return carPosition.x >= (480 - car.getWidth());
+    }
+
+    public boolean leftBounds() {
+        return carPosition.x <= 0;
     }
 
     public Texture getCar() {
         return car;
     }
 
-    public void goLeft() {
-        speedH = - 150;
-    }
-
-    public void goRight() {
-        speedH = 150;
-    }
-
-    public void goStraight() {
-        speedH = 0;
-    }
-
-    private float changeSpeed(float speed, float dt) {
+    public float changeSpeed(float dt) {
         if(speed < 250) {
             if ((speed + 35 * dt) < 175)
                 speed += 35 * dt;
