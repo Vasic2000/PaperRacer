@@ -251,8 +251,19 @@ class GameScreen extends State {
             if (Math.abs(player.getPosition().x - competitor1.getPosition().x) <
                     Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
                 averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
-                player.setSpeed(averageSpeed);
+
+//              Разлепить машинки
+                if(player.getPosition().y > competitor1.getPosition().y) {
+                    player.setSpeed(averageSpeed + 5);
+                    player.update(dt);
+                }
+                if(player.getPosition().y < competitor1.getPosition().y) {
+                    competitor1.setSpeed(averageSpeed + 5);
+                    competitor1.update(dt);
+                }
+
                 competitor1.setSpeed(averageSpeed);
+                player.setSpeed(averageSpeed);
             }
         }
 
@@ -289,8 +300,19 @@ class GameScreen extends State {
             if (Math.abs(player.getPosition().x - competitor2.getPosition().x) <
                     Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
                 averageSpeed = (player.getSpeed() + competitor2.getSpeed()) / 2;
-                player.setSpeed(averageSpeed);
+
+//              Разлепить машинки
+                if(player.getPosition().y > competitor2.getPosition().y) {
+                    player.setSpeed(averageSpeed + 5);
+                    player.update(dt);
+                }
+                if(player.getPosition().y < competitor2.getPosition().y) {
+                    competitor2.setSpeed(averageSpeed + 5);
+                    competitor2.update(dt);
+                }
+
                 competitor2.setSpeed(averageSpeed);
+                player.setSpeed(averageSpeed);
             }
         }
     }
