@@ -6,10 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Competitor {
     private Texture car;
-
     private Vector2 carPosition;
-
-    private Rectangle carBounds;
+    private Rectangle carBounds, big_repair, small_repair;
 
     float speed, speedH;
 
@@ -45,6 +43,9 @@ public class Competitor {
             speedH = 0;
         }
 
+        if((frontalCollision(small_repair)) || (frontalCollision(big_repair)))
+            carPosition.add(0, -speed * dt);
+
         carBounds.setPosition(carPosition.x, carPosition.y);
     }
 
@@ -56,18 +57,28 @@ public class Competitor {
         return carPosition.x <= 0;
     }
 
+    public boolean frontalCollision(Rectangle obstacle) {
+        if (((carPosition.x + car.getWidth() >= obstacle.getX()) &&
+                        (carPosition.x <= obstacle.getX() + obstacle.getWidth())) &&
+                ((carPosition.y + car.getHeight() >= obstacle.getY()) &&
+                        (carPosition.y + car.getHeight() <= obstacle.getY() + obstacle.getHeight())))
+            return true;
+        else
+            return false;
+    }
+
     public Texture getCar() {
         return car;
     }
 
-    public float changeSpeed(float dt) {
+    public void changeSpeed(float dt) {
+//        SPEED
         if(speed < 250) {
             if ((speed + 35 * dt) < 175)
                 speed += 35 * dt;
             else
                 speed = 175;
         }
-
         if(speed > 250) {
             if ((speed - 35 * dt) > 250)
                 speed -= 35 * dt;
@@ -75,7 +86,31 @@ public class Competitor {
                 speed = 250;
         }
 
-        return speed;
+        if((frontalCollision(small_repair)) || (frontalCollision(big_repair)))
+            speed = 0;
+
+//        SPEEDH
+        float leftDiff, rightDiff;
+        if(small_repair.getY() < big_repair.getY()) {
+            leftDiff = small_repair.getX() - carPosition.x - car.getWidth();
+            rightDiff = small_repair.getX() + small_repair.getWidth() - carPosition.x;
+
+            if((leftDiff < rightDiff) && (small_repair.getX() > car.getWidth()) && (leftDiff > 0))
+                speedH = -25;
+            else
+                if(rightDiff > 0)
+                    speedH = 25;
+
+        } else {
+            leftDiff = big_repair.getX() - carPosition.x - car.getWidth();
+            rightDiff = big_repair.getX() + big_repair.getWidth() - carPosition.x;
+        }
+
+        if((leftDiff < rightDiff) && (big_repair.getX() > car.getWidth()) && (leftDiff > 0))
+            speedH = -25;
+        else
+        if(rightDiff > 0)
+            speedH = 25;
     }
 
     public Rectangle getCarBounds() {
@@ -96,5 +131,13 @@ public class Competitor {
 
     public void setSpeedH(float speed) {
         this.speedH = speed;
+    }
+
+    public void setSmallRepairPosition(int x, int y, int width, int height) {
+        small_repair = new Rectangle(x, y, width, height);
+    }
+
+    public void setBigRepairPosition(int x, int y, int width, int height) {
+        big_repair = new Rectangle(x, y, width, height);
     }
 }

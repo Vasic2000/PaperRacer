@@ -48,8 +48,20 @@ class GameScreen extends State {
         player = new Player("mclaren.png", 240, 130);
         competitor1 = new Competitor("williams.png", 100, 400);
         competitor2 = new Competitor("benetton.png", 375, 300);
-        big_repair = new Obstacle("building_yard.png", rnd.nextInt(480), 3000 + rnd.nextInt(1000));
-        small_repair = new Obstacle("small_repair.png", rnd.nextInt(480), 1000 + rnd.nextInt(1000));
+        big_repair = new Obstacle("building_yard.png", rnd.nextInt(480),
+                3000 + rnd.nextInt(1000));
+        small_repair = new Obstacle("small_repair.png", rnd.nextInt(480),
+                1000 + rnd.nextInt(1000));
+
+        competitor1.setSmallRepairPosition((int) small_repair.getPosition().x, (int) small_repair.getPosition().y,
+                small_repair.getBY().getWidth(), small_repair.getBY().getHeight());
+        competitor2.setSmallRepairPosition((int) small_repair.getPosition().x, (int) small_repair.getPosition().y,
+                small_repair.getBY().getWidth(), small_repair.getBY().getHeight());
+
+        competitor1.setBigRepairPosition((int) big_repair.getPosition().x, (int) big_repair.getPosition().y,
+                big_repair.getBY().getWidth(), big_repair.getBY().getHeight());
+        competitor2.setBigRepairPosition((int) big_repair.getPosition().x, (int) big_repair.getPosition().y,
+                big_repair.getBY().getWidth(), big_repair.getBY().getHeight());
 
         track1 = new Texture("track01.jpg");
         track2 = new Texture("track02.jpg");
@@ -57,12 +69,16 @@ class GameScreen extends State {
         track4 = new Texture("track04.jpg");
         accelerator = new Texture("accelerator.png");
 
-        trackPos1 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2);
-        trackPos2 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+        trackPos1 = new Vector2(camera.position.x - camera.viewportWidth / 2,
+                camera.position.y - camera.viewportHeight / 2);
+        trackPos2 = new Vector2(camera.position.x - camera.viewportWidth / 2,
+                camera.position.y - camera.viewportHeight / 2
                 + track1.getHeight());
-        trackPos3 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+        trackPos3 = new Vector2(camera.position.x - camera.viewportWidth / 2,
+                camera.position.y - camera.viewportHeight / 2
                 + track1.getHeight() + track2.getHeight());
-        trackPos4 = new Vector2(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2
+        trackPos4 = new Vector2(camera.position.x - camera.viewportWidth / 2,
+                camera.position.y - camera.viewportHeight / 2
                 + track1.getHeight() + track2.getHeight() + track3.getHeight());
     }
 
@@ -118,9 +134,9 @@ class GameScreen extends State {
         handleInput();
 
         checkCollisions(dt);
+        player.update(dt);
 
         player.changeSpeed(dt);
-        player.update(dt);
 
         competitor1.changeSpeed(dt);
         competitor1.update(dt);
@@ -196,6 +212,8 @@ class GameScreen extends State {
                 y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
             big_repair.setObstacle_Position(x, y);
             big_repair.setObstacle_Bounds(x, y);
+            competitor1.setBigRepairPosition(x, y, big_repair.getBY().getWidth(), big_repair.getBY().getHeight());
+            competitor2.setBigRepairPosition(x, y, big_repair.getBY().getWidth(), big_repair.getBY().getHeight());
         }
 
         if(small_repair.getPosition().y < camera.position.y - 400 - small_repair.getBY().getHeight()) {
@@ -206,6 +224,8 @@ class GameScreen extends State {
                 y = (int) camera.position.y + 1000 + rnd.nextInt(3000);
             small_repair.setObstacle_Position(x, y);
             small_repair.setObstacle_Bounds(x, y);
+            competitor1.setSmallRepairPosition(x, y, small_repair.getBY().getWidth(), small_repair.getBY().getHeight());
+            competitor2.setSmallRepairPosition(x, y, small_repair.getBY().getWidth(), small_repair.getBY().getHeight());
         }
     }
 
@@ -252,18 +272,20 @@ class GameScreen extends State {
                     Math.abs(player.getPosition().y - competitor1.getPosition().y)) {
                 averageSpeed = (player.getSpeed() + competitor1.getSpeed()) / 2;
 
+                if (competitor1.getSpeed() == 0) {
+                    player.setSpeed(-5);
+                    player.update(dt);
+                }
+
 //              Разлепить машинки
-                if(player.getPosition().y > competitor1.getPosition().y) {
+                if (player.getPosition().y > competitor1.getPosition().y) {
                     player.setSpeed(averageSpeed + 5);
                     player.update(dt);
                 }
-                if(player.getPosition().y < competitor1.getPosition().y) {
-                    competitor1.setSpeed(averageSpeed + 5);
+                if (player.getPosition().y < competitor1.getPosition().y) {
+                    competitor1.setSpeed(averageSpeed - 5);
                     competitor1.update(dt);
                 }
-
-                competitor1.setSpeed(averageSpeed);
-                player.setSpeed(averageSpeed);
             }
         }
 
@@ -301,6 +323,11 @@ class GameScreen extends State {
                     Math.abs(player.getPosition().y - competitor2.getPosition().y)) {
                 averageSpeed = (player.getSpeed() + competitor2.getSpeed()) / 2;
 
+                if (competitor2.getSpeed() == 0) {
+                    player.setSpeed(-5);
+                    player.update(dt);
+                }
+
 //              Разлепить машинки
                 if(player.getPosition().y > competitor2.getPosition().y) {
                     player.setSpeed(averageSpeed + 5);
@@ -310,10 +337,9 @@ class GameScreen extends State {
                     competitor2.setSpeed(averageSpeed + 5);
                     competitor2.update(dt);
                 }
-
-                competitor2.setSpeed(averageSpeed);
-                player.setSpeed(averageSpeed);
             }
+
+
         }
     }
 

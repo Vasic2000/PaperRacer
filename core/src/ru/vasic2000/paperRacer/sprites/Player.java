@@ -117,4 +117,5 @@ public class Player {
     public void setSpeedH(float speed) {
         this.speedH = speed;
     }
+
 }
